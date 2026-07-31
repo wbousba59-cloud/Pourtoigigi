@@ -442,20 +442,32 @@
   });
 
   validateBtn.addEventListener('click', () => {
-    datetimeScreen.classList.remove('show');
-    document.getElementById('finalText').textContent = selected + ", ça me va très bien.";
+  datetimeScreen.classList.remove('show');
+  document.getElementById('finalText').textContent = selected + ", ça me va très bien.";
+  let dateTimeStr = '';
+  if (dateInput.value) {
+    const d = new Date(dateInput.value + 'T00:00:00');
+    dateTimeStr += d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+  if (timeInput.value) {
+    dateTimeStr += (dateTimeStr ? ' à ' : 'à ') + timeInput.value;
+  }
+  document.getElementById('finalDateTime').textContent = dateTimeStr;
+  finalScreen.classList.add('show');
 
-    let dateTimeStr = '';
-    if (dateInput.value) {
-      const d = new Date(dateInput.value + 'T00:00:00');
-      dateTimeStr += d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-    if (timeInput.value) {
-      dateTimeStr += (dateTimeStr ? ' à ' : 'à ') + timeInput.value;
-    }
-    document.getElementById('finalDateTime').textContent = dateTimeStr;
+  // Envoi de la réponse par email via Formspree
+  fetch('https://formspree.io/f/xbdnewwp', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      choix: selected,
+      jour: dateInput.value,
+      heure: timeInput.value,
+      message: 'GiGi a répondu à ta page 💌'
+    })
+  });
+});
 
-    finalScreen.classList.add('show');
   });
 
   // petits pétales flottants
